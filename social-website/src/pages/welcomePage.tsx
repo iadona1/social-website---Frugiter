@@ -1,7 +1,8 @@
 import '../styles/Welcome.css'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import peopleIcon from '../assets/small-Frugiter-Icons-(2).png'
+import RulesModal from '../components/RulesModal'
+import type { SignupData } from '../types/index'
 
 export default function Welcome() {
   const navigate = useNavigate()
@@ -10,15 +11,18 @@ export default function Welcome() {
   const [loginPassword, setLoginPassword] = useState('')
   const [loginError, setLoginError] = useState('')
 
-  const [signupData, setSignupData] = useState({
+  const [signupData, setSignupData] = useState<SignupData>({
     firstName: '',
     lastName: '',
+    username: '',
     email: '',
     confirmEmail: '',
     password: '',
+    dateOfBirth: '',
   })
   const [signupError, setSignupError] = useState('')
   const [signupLoading, setSignupLoading] = useState(false)
+  const [showRules, setShowRules] = useState(false)
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -47,9 +51,45 @@ export default function Welcome() {
     }
   }
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleSignupClick = (e: React.FormEvent) => {
     e.preventDefault()
     setSignupError('')
+
+    if (!signupData.firstName || !signupData.lastName || !signupData.email || !signupData.password) {
+      setSignupError('Please fill in all fields before continuing.')
+      return
+    }
+
+    if (!signupData.username) {
+      setSignupError('Please choose a username.')
+      return
+    }
+
+    if (signupData.username.length < 3) {
+      setSignupError('Username must be at least 3 characters.')
+      return
+    }
+
+    if (signupData.email !== signupData.confirmEmail) {
+      setSignupError('Emails do not match.')
+      return
+    }
+
+    if (signupData.password.length < 6) {
+      setSignupError('Password must be at least 6 characters.')
+      return
+    }
+
+    if (!signupData.dateOfBirth) {
+      setSignupError('Please enter your date of birth.')
+      return
+    }
+
+    setShowRules(true)
+  }
+
+  const handleRulesAccepted = async () => {
+    setShowRules(false)
     setSignupLoading(true)
 
     try {
@@ -69,7 +109,8 @@ export default function Welcome() {
 
       localStorage.setItem('token', data.token)
       localStorage.setItem('user', JSON.stringify(data.user))
-      navigate('/home')
+      // After registration go to avatar selection page
+      navigate('/select-avatar')
 
     } catch {
       setSignupError('Could not connect to server. Is it running?')
@@ -77,8 +118,20 @@ export default function Welcome() {
     }
   }
 
+  const handleRulesDeclined = () => {
+    setShowRules(false)
+  }
+
   return (
     <div className="welcome-page">
+
+      {showRules && (
+        <RulesModal
+          onAccept={handleRulesAccepted}
+          onDecline={handleRulesDeclined}
+        />
+      )}
+
       <div className="welcome-bg-fallback" />
 
       <div className="bubbles">
@@ -124,7 +177,11 @@ export default function Welcome() {
 
       <main className="welcome-content">
         <div className="welcome-left">
-          <img src={peopleIcon} alt="AeroSocial" className="welcome-icon" />
+          <img
+            src="/assets/small-Frugiter-Icons-(2).png"
+            alt="AeroSocial"
+            className="welcome-icon"
+          />
           <h1 className="welcome-tagline">
             Connect and share with the people in your life.
           </h1>
@@ -138,7 +195,7 @@ export default function Welcome() {
           <div className="card-title">Sign Up</div>
           <div className="card-sub">It's free and always will be.</div>
 
-          <form onSubmit={handleSignup}>
+          <form onSubmit={handleSignupClick}>
             <div className="card-row">
               <input
                 className="aero-input"
@@ -153,6 +210,19 @@ export default function Welcome() {
                 placeholder="Last Name"
                 value={signupData.lastName}
                 onChange={e => setSignupData({ ...signupData, lastName: e.target.value })}
+              />
+            </div>
+
+            <div style={{ marginBottom: '10px' }}>
+              <input
+                className="aero-input"
+                type="text"
+                placeholder="Username (e.g. john_doe)"
+                value={signupData.username}
+                onChange={e => setSignupData({
+                  ...signupData,
+                  username: e.target.value.toLowerCase().replace(/\s/g, '_')
+                })}
               />
             </div>
 
@@ -176,7 +246,7 @@ export default function Welcome() {
               />
             </div>
 
-            <div style={{ marginBottom: '16px' }}>
+            <div style={{ marginBottom: '10px' }}>
               <input
                 className="aero-input"
                 type="password"
@@ -184,6 +254,35 @@ export default function Welcome() {
                 value={signupData.password}
                 onChange={e => setSignupData({ ...signupData, password: e.target.value })}
               />
+            </div>
+
+            <div style={{ marginBottom: '6px' }}>
+              <label style={{
+                fontSize: '12px',
+                fontWeight: '700',
+                color: '#4a7ab5',
+                display: 'block',
+                marginBottom: '5px',
+                paddingLeft: '2px'
+              }}>
+                Birthday
+              </label>
+              <input
+                className="aero-input"
+                type="date"
+                value={signupData.dateOfBirth}
+                onChange={e => setSignupData({ ...signupData, dateOfBirth: e.target.value })}
+                max={new Date().toISOString().split('T')[0]}
+              />
+            </div>
+
+            <div style={{
+              fontSize: '11px',
+              color: '#6a9ac8',
+              marginBottom: '14px',
+              paddingLeft: '2px'
+            }}>
+              You must be at least 15 years old to register.
             </div>
 
             {signupError && (
@@ -221,7 +320,7 @@ export default function Welcome() {
           <a href="#">About</a> ·
           <a href="#">Help</a>
         </div>
-        <div style={{ marginTop: '4px' }}>AeroSocial © 2025</div>
+        <div style={{ marginTop: '4px' }}>AeroSocial © 2026</div>
       </footer>
     </div>
   )

@@ -1,10 +1,9 @@
 import '../styles/Home.css'
-
-
+import { useState } from 'react'
+import type { User } from '../types/index'
 
 export default function Home() {
-  const user = JSON.parse(localStorage.getItem('user') || '{}')
-
+  const [user] = useState<User>(() => JSON.parse(localStorage.getItem('user') || '{}'))
 
   return (
     <div className="home-page">
@@ -19,7 +18,7 @@ export default function Home() {
         <div className="navbar-logo">Aero<span>Social</span></div>
         <div className="navbar-user">
           <img
-            src="/assets/default-avatar.png"
+            src={user.avatarUrl || '/assets/Frugiter-Icon-blue.jpg'}
             alt="avatar"
             className="nav-avatar"
           />
@@ -38,4 +37,4 @@ export default function Home() {
       </main>
     </div>
   )
-}
+}   

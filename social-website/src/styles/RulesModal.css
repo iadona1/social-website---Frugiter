@@ -1,0 +1,212 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 40, 100, 0.45);
+  backdrop-filter: blur(8px);
+  padding: 20px;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 560px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(160deg,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(220, 240, 255, 0.88) 100%
+  );
+  backdrop-filter: blur(24px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 2px 0 rgba(255, 255, 255, 0.95) inset,
+    0 24px 80px rgba(0, 80, 200, 0.25),
+    0 8px 32px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 28px 28px 20px;
+  background: linear-gradient(180deg,
+    rgba(80, 160, 220, 0.15) 0%,
+    transparent 100%
+  );
+  border-bottom: 1px solid rgba(100, 160, 220, 0.2);
+  text-align: center;
+}
+
+.modal-logo {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1a4a8a;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1a4a8a;
+  margin-bottom: 4px;
+}
+
+.modal-sub {
+  font-size: 13px;
+  color: #4a7ab5;
+}
+
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 160, 220, 0.4) transparent;
+}
+
+.modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: rgba(100, 160, 220, 0.4);
+  border-radius: 3px;
+}
+
+.rule-section {
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.7) 0%,
+    rgba(210, 235, 255, 0.5) 100%
+  );
+  border: 1px solid rgba(100, 160, 220, 0.25);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.rule-section-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1a4a8a;
+  margin-bottom: 8px;
+}
+
+.rule-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.rule-section ul li {
+  font-size: 12px;
+  color: #2a4a7a;
+  line-height: 1.5;
+  padding-left: 14px;
+  position: relative;
+}
+
+.rule-section ul li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: #6aaad8;
+  font-size: 11px;
+}
+
+.modal-agreement {
+  font-size: 12px;
+  color: #4a6a9a;
+  text-align: center;
+  line-height: 1.6;
+  padding: 12px 16px;
+  background: rgba(100, 160, 220, 0.08);
+  border-radius: 10px;
+  border: 1px solid rgba(100, 160, 220, 0.2);
+}
+
+.modal-agreement strong {
+  color: #1a4a8a;
+}
+
+.modal-footer {
+  padding: 16px 28px 24px;
+  display: flex;
+  gap: 12px;
+  border-top: 1px solid rgba(100, 160, 220, 0.2);
+  background: linear-gradient(0deg,
+    rgba(220, 240, 255, 0.3) 0%,
+    transparent 100%
+  );
+}
+
+.btn-decline {
+  flex: 1;
+  height: 42px;
+  border-radius: 10px;
+  border: 1px solid rgba(100, 160, 220, 0.4);
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(220, 235, 255, 0.6) 100%
+  );
+  color: #4a7ab5;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-decline:hover {
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(220, 235, 255, 0.8) 100%
+  );
+  transform: translateY(-1px);
+}
+
+.btn-agree {
+  flex: 2;
+  height: 42px;
+  border-radius: 10px;
+  border: 1px solid rgba(60, 160, 60, 0.6);
+  background: linear-gradient(180deg,
+    #72d572 0%,
+    #48b848 50%,
+    #3aaa3a 100%
+  );
+  color: white;
+  font-size: 14px;
+  font-weight: 800;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  text-shadow: 0 1px 2px rgba(0, 80, 0, 0.4);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.35) inset,
+    0 4px 12px rgba(0, 140, 0, 0.25);
+  transition: all 0.2s;
+}
+
+.btn-agree:hover {
+  background: linear-gradient(180deg,
+    #85e085 0%,
+    #55c855 50%,
+    #46bb46 100%
+  );
+  transform: translateY(-1px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.35) inset,
+    0 6px 16px rgba(0, 140, 0, 0.3);
+}

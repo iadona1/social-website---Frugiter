@@ -1,0 +1,236 @@
+.select-avatar-page {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Vista-style green/teal gradient background */
+.vista-bg {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    160deg,
+    #2a7a4a 0%,
+    #3a9a6a 20%,
+    #4ab888 40%,
+    #3a9090 60%,
+    #2a7080 80%,
+    #1a5060 100%
+  );
+  z-index: 0;
+}
+
+/* Subtle Vista light streak */
+.vista-bg::after {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: -10%;
+  width: 80%;
+  height: 80%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.12) 0%,
+    transparent 70%
+  );
+  transform: rotate(-20deg);
+}
+
+.vista-container {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 40px 20px;
+}
+
+.vista-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 600px;
+  width: 100%;
+}
+
+.vista-greeting {
+  font-size: 32px;
+  font-weight: 800;
+  color: white;
+  text-shadow:
+    0 2px 8px rgba(0, 40, 20, 0.5),
+    0 0 40px rgba(100, 220, 180, 0.3);
+  text-align: center;
+}
+
+.vista-sub {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 0 1px 4px rgba(0, 40, 20, 0.4);
+  text-align: center;
+  margin-top: -10px;
+}
+
+/* Vista picture frame */
+.vista-selected-wrapper {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+.vista-selected-frame {
+  width: 130px;
+  height: 130px;
+  border-radius: 16px;
+  padding: 6px;
+  background: linear-gradient(145deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(200, 230, 220, 0.7) 50%,
+    rgba(150, 200, 190, 0.5) 100%
+  );
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.6),
+    0 8px 32px rgba(0, 60, 40, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: all 0.3s;
+}
+
+.vista-selected-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+/* Avatar grid */
+.vista-avatar-grid {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 16px 20px;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 2px 0 rgba(255, 255, 255, 0.1) inset,
+    0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.vista-avatar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.vista-avatar-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.vista-avatar-item.active {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.4),
+    0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.vista-avatar-item img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  transition: transform 0.2s;
+}
+
+.vista-avatar-item:hover img,
+.vista-avatar-item.active img {
+  transform: scale(1.1);
+}
+
+.vista-avatar-item span {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* Confirm button */
+.vista-confirm-btn {
+  height: 44px;
+  padding: 0 40px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.15) 100%
+  );
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  text-shadow: 0 1px 3px rgba(0, 40, 20, 0.5);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.3) inset,
+    0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+
+.vista-confirm-btn:hover {
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.25) 100%
+  );
+  transform: translateY(-1px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.3) inset,
+    0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Vista taskbar */
+.vista-taskbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  background: linear-gradient(180deg,
+    rgba(20, 80, 60, 0.85) 0%,
+    rgba(10, 50, 40, 0.95) 100%
+  );
+  backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.vista-taskbar-logo {
+  font-size: 16px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 4px rgba(0, 40, 20, 0.5);
+  letter-spacing: -0.3px;
+}
