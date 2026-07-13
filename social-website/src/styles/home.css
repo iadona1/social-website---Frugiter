@@ -1,0 +1,128 @@
+.home-page {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.home-bg {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(160deg,
+    #a8dfff 0%,
+    #5bc8f5 20%,
+    #3db8e8 35%,
+    #59cc6e 65%,
+    #7de87a 80%,
+    #a8f0a0 100%
+  );
+  z-index: 0;
+}
+
+.home-navbar {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 56px;
+  background: linear-gradient(180deg,
+    rgba(80, 160, 220, 0.92) 0%,
+    rgba(50, 130, 200, 0.88) 100%
+  );
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.35);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.3) inset,
+    0 4px 20px rgba(0,80,160,0.25);
+}
+
+.navbar-logo {
+  font-size: 28px;
+  font-weight: 800;
+  color: white;
+  text-shadow:
+    0 1px 3px rgba(0,60,140,0.5),
+    0 0 20px rgba(180,220,255,0.4);
+  letter-spacing: -0.5px;
+}
+
+.navbar-logo span {
+  color: #c8f0ff;
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.7);
+  object-fit: cover;
+  object-position: center;
+  box-shadow: 0 2px 8px rgba(0,80,180,0.3);
+  background: rgba(255,255,255,0.3);
+}
+
+.nav-username {
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+  text-shadow: 0 1px 3px rgba(0,60,140,0.4);
+}
+
+.home-coming-soon {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coming-soon-card {
+  background: linear-gradient(160deg,
+    rgba(255,255,255,0.75) 0%,
+    rgba(220,240,255,0.65) 100%
+  );
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.8);
+  box-shadow:
+    0 2px 0 rgba(255,255,255,0.9) inset,
+    0 20px 60px rgba(0,80,180,0.2);
+  padding: 60px 80px;
+  text-align: center;
+}
+
+.coming-soon-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  animation: floatIcon 3s ease-in-out infinite;
+}
+
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+.coming-soon-title {
+  font-size: 48px;
+  font-weight: 800;
+  color: #1a4a8a;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+  margin-bottom: 12px;
+}
+
+.coming-soon-sub {
+  font-size: 16px;
+  color: #4a7ab5;
+  max-width: 320px;
+}
