@@ -1,3 +1,4 @@
+/* Page wrapper to simulate desktop */
 .home-page {
   min-height: 100vh;
   width: 100%;
@@ -5,6 +6,15 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  /* XP window border */
+  outline: 3px solid #1a52b8;
+  outline-offset: -3px;
+  box-shadow:
+    0 0 0 1px #0a2a6e,
+    0 0 0 4px #4a9ef8,
+    0 0 0 5px #0a2a6e,
+    0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
 .home-bg {
@@ -125,4 +135,55 @@
   font-size: 16px;
   color: #4a7ab5;
   max-width: 320px;
+}
+
+/* Bubbles inherited from Welcome */
+.bubbles {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bubble {
+  position: absolute;
+  bottom: -100px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 35%,
+    rgba(255, 255, 255, 0.85),
+    rgba(180, 230, 255, 0.3) 50%,
+    rgba(120, 200, 255, 0.15)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  animation: floatUp linear infinite;
+}
+
+.bubble:nth-child(1) { width: 40px; height: 40px; left: 8%;  animation-duration: 9s;  animation-delay: 0s; }
+.bubble:nth-child(2) { width: 20px; height: 20px; left: 15%; animation-duration: 7s;  animation-delay: 1s; }
+.bubble:nth-child(3) { width: 60px; height: 60px; left: 25%; animation-duration: 11s; animation-delay: 2s; }
+
+/* Minimize animation */
+@keyframes minimizeDown {
+  0% {
+    transform: scaleY(1) translateY(0);
+    opacity: 1;
+    transform-origin: top;
+  }
+  60% {
+    transform: scaleY(0.05) translateY(60px) scaleX(0.6);
+    opacity: 0.6;
+    transform-origin: bottom;
+  }
+  100% {
+    transform: scaleY(0) translateY(80px) scaleX(0.3);
+    opacity: 0;
+    transform-origin: bottom;
+  }
+}
+
+.home-page.minimizing {
+  animation: minimizeDown 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  pointer-events: none;
 }

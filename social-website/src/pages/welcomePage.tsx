@@ -109,7 +109,6 @@ export default function Welcome() {
 
       localStorage.setItem('token', data.token)
       localStorage.setItem('user', JSON.stringify(data.user))
-      // After registration go to avatar selection page
       navigate('/select-avatar')
 
     } catch {
@@ -156,7 +155,14 @@ export default function Welcome() {
             onChange={e => setLoginPassword(e.target.value)}
           />
           <button type="submit" className="btn-login">Log In</button>
-          <a href="#" className="navbar-forgot">Forgot password?</a>
+          
+          <a
+            href="#"
+            className="navbar-forgot"
+            onClick={(e: React.MouseEvent<HTMLAnchorElement>) => { e.preventDefault(); navigate('/forgot-password') }}
+          >
+            Forgot password?
+          </a>
         </form>
         {loginError && (
           <div style={{

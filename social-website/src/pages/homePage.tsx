@@ -1,12 +1,14 @@
 import '../styles/Home.css'
 import { useState } from 'react'
 import type { User } from '../types/index'
+import WindowsTitleBar from '../components/WindowsTitleBar'
 
 export default function Home() {
   const [user] = useState<User>(() => JSON.parse(localStorage.getItem('user') || '{}'))
 
   return (
     <div className="home-page">
+      <WindowsTitleBar title="AeroSocial — Home" />
       <div className="home-bg" />
       <div className="bubbles">
         {Array.from({ length: 8 }).map((_, i) => (
@@ -37,4 +39,4 @@ export default function Home() {
       </main>
     </div>
   )
-}   
+}
