@@ -131,7 +131,7 @@ export default function Welcome() {
         />
       )}
 
-      <div className="welcome-bg-fallback" />
+      <div className="welcome-bg" />
 
       <div className="bubbles">
         {Array.from({ length: 10 }).map((_, i) => (

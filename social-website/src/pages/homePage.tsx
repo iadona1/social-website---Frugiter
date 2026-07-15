@@ -10,11 +10,6 @@ export default function Home() {
     <div className="home-page">
       <WindowsTitleBar title="AeroSocial — Home" />
       <div className="home-bg" />
-      <div className="bubbles">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div className="bubble" key={i} />
-        ))}
-      </div>
 
       <nav className="home-navbar">
         <div className="navbar-logo">Aero<span>Social</span></div>

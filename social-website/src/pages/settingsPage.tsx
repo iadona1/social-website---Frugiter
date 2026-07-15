@@ -21,12 +21,6 @@ export default function Settings() {
       <WindowsTitleBar title="AeroSocial — Settings" />
       <div className="settings-bg" />
 
-      <div className="bubbles">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div className="bubble" key={i} />
-        ))}
-      </div>
-
       <div className="settings-container">
 
         {/* User card at top */}

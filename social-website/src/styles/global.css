@@ -8,3 +8,13 @@ body {
   font-family: 'Nunito', sans-serif;
   overflow-x: hidden;
 }
+
+/* Global glossy aero variables */
+:root {
+  --aero-glass: rgba(255, 255, 255, 0.25);
+  --aero-glass-border: rgba(255, 255, 255, 0.7);
+  --aero-glass-shine: rgba(255, 255, 255, 0.6);
+  --aero-blue: #1a6adf;
+  --aero-blue-light: #4ab0ff;
+  --aero-glow: rgba(100, 200, 255, 0.4);
+}

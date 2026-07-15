@@ -234,3 +234,19 @@
   text-shadow: 0 1px 4px rgba(0, 40, 20, 0.5);
   letter-spacing: -0.3px;
 }
+
+.vista-bg {
+  position: fixed;
+  inset: 0;
+  background-image: url('/assets/background.jpg');
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+
+.vista-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 40, 100, 0.25);
+}
