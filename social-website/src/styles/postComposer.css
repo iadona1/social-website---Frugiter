@@ -1,0 +1,190 @@
+.composer-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 8px 32px rgba(0, 60, 160, 0.1);
+  padding: 16px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.composer-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.15) 0%,
+    transparent 100%
+  );
+  border-radius: 20px 20px 60% 60% / 20px 20px 30px 30px;
+  pointer-events: none;
+}
+
+.composer-top {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  position: relative;
+  z-index: 1;
+}
+
+.composer-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  object-fit: contain;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 60, 160, 0.2);
+}
+
+.composer-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-family: 'Nunito', sans-serif;
+  color: white;
+  resize: none;
+  outline: none;
+  transition: all 0.2s;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.composer-input::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.composer-input:focus {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 0 0 3px rgba(150, 210, 255, 0.15);
+}
+
+.composer-preview {
+  position: relative;
+  margin: 12px 0 0 54px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.composer-preview img {
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+  display: block;
+}
+
+.composer-remove-img {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  transition: all 0.2s;
+}
+
+.composer-remove-img:hover {
+  background: rgba(220, 50, 50, 0.7);
+}
+
+.composer-error {
+  margin: 8px 0 0 54px;
+  font-size: 12px;
+  color: rgba(255, 150, 150, 0.9);
+  font-weight: 700;
+}
+
+.composer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  position: relative;
+  z-index: 1;
+}
+
+.composer-img-btn {
+  height: 34px;
+  padding: 0 16px;
+  border-radius: 17px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  backdrop-filter: blur(8px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.composer-img-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.composer-post-btn {
+  height: 34px;
+  padding: 0 28px;
+  border-radius: 17px;
+  border: 1px solid rgba(30, 140, 30, 0.7);
+  background: linear-gradient(180deg,
+    #88e060 0%,
+    #58c830 49%,
+    #38aa10 50%,
+    #2a9808 100%
+  );
+  color: white;
+  font-size: 13px;
+  font-weight: 800;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  text-shadow: 0 1px 2px rgba(0, 60, 0, 0.4);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    0 4px 12px rgba(0, 140, 0, 0.25);
+  transition: all 0.2s;
+}
+
+.composer-post-btn:hover {
+  background: linear-gradient(180deg,
+    #a0f070 0%,
+    #68d840 49%,
+    #48ba20 50%,
+    #38a810 100%
+  );
+  transform: translateY(-1px);
+}
+
+.composer-post-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}

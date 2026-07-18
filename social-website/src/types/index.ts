@@ -35,3 +35,35 @@ export interface AvatarOption {
   color: string
   url: string
 }
+
+export interface Comment {
+  id: string
+  userId: string
+  displayName: string
+  avatarUrl: string
+  content: string
+  createdAt: string
+  likesCount: number
+  liked: boolean
+}
+
+export interface Post {
+  id: string
+  userId: string
+  displayName: string
+  avatarUrl: string
+  content: string
+  imageUrl?: string
+  likesCount: number
+  commentsCount: number
+  createdAt: string
+  liked: boolean
+}
+
+export interface PostCardProps {
+  post: Post;
+  index: number;
+  onLike: (postId: string) => Promise<void>;
+  onDelete: (postId: string) => void;
+  currentUserId: string;
+}
