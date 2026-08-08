@@ -1,4 +1,4 @@
-import '../styles/Welcome.css'
+import '../styles/welcome.css'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import RulesModal from '../components/RulesModal'
@@ -121,6 +121,11 @@ export default function Welcome() {
     setShowRules(false)
   }
 
+  const handleForgotPassword = (e: React.MouseEvent) => {
+    e.preventDefault()
+    navigate('/forgot-password')
+  }
+
   return (
     <div className="welcome-page">
 
@@ -155,29 +160,12 @@ export default function Welcome() {
             onChange={e => setLoginPassword(e.target.value)}
           />
           <button type="submit" className="btn-login">Log In</button>
-          
-          <a
-            href="#"
-            className="navbar-forgot"
-            onClick={(e: React.MouseEvent<HTMLAnchorElement>) => { e.preventDefault(); navigate('/forgot-password') }}
-          >
+          <a href="#" className="navbar-forgot" onClick={handleForgotPassword}>
             Forgot password?
           </a>
         </form>
         {loginError && (
-          <div style={{
-            position: 'absolute',
-            top: '58px',
-            right: '24px',
-            background: 'rgba(220,50,50,0.85)',
-            color: 'white',
-            padding: '6px 14px',
-            borderRadius: '8px',
-            fontSize: '12px',
-            backdropFilter: 'blur(8px)'
-          }}>
-            {loginError}
-          </div>
+          <div className="login-error">{loginError}</div>
         )}
       </nav>
 
@@ -219,7 +207,7 @@ export default function Welcome() {
               />
             </div>
 
-            <div style={{ marginBottom: '10px' }}>
+            <div className="input-group">
               <input
                 className="aero-input"
                 type="text"
@@ -232,7 +220,7 @@ export default function Welcome() {
               />
             </div>
 
-            <div style={{ marginBottom: '10px' }}>
+            <div className="input-group">
               <input
                 className="aero-input"
                 type="email"
@@ -242,7 +230,7 @@ export default function Welcome() {
               />
             </div>
 
-            <div style={{ marginBottom: '10px' }}>
+            <div className="input-group">
               <input
                 className="aero-input"
                 type="email"
@@ -252,7 +240,7 @@ export default function Welcome() {
               />
             </div>
 
-            <div style={{ marginBottom: '10px' }}>
+            <div className="input-group">
               <input
                 className="aero-input"
                 type="password"
@@ -262,17 +250,8 @@ export default function Welcome() {
               />
             </div>
 
-            <div style={{ marginBottom: '6px' }}>
-              <label style={{
-                fontSize: '12px',
-                fontWeight: '700',
-                color: '#4a7ab5',
-                display: 'block',
-                marginBottom: '5px',
-                paddingLeft: '2px'
-              }}>
-                Birthday
-              </label>
+            <div className="input-group-birthday">
+              <label className="input-label">Birthday</label>
               <input
                 className="aero-input"
                 type="date"
@@ -282,27 +261,12 @@ export default function Welcome() {
               />
             </div>
 
-            <div style={{
-              fontSize: '11px',
-              color: '#6a9ac8',
-              marginBottom: '14px',
-              paddingLeft: '2px'
-            }}>
+            <div className="input-hint">
               You must be at least 15 years old to register.
             </div>
 
             {signupError && (
-              <div style={{
-                background: 'rgba(220,50,50,0.15)',
-                border: '1px solid rgba(220,50,50,0.4)',
-                color: '#a02020',
-                padding: '8px 12px',
-                borderRadius: '8px',
-                fontSize: '12px',
-                marginBottom: '12px'
-              }}>
-                {signupError}
-              </div>
+              <div className="signup-error">{signupError}</div>
             )}
 
             <div className="card-divider" />
@@ -326,7 +290,7 @@ export default function Welcome() {
           <a href="#">About</a> ·
           <a href="#">Help</a>
         </div>
-        <div style={{ marginTop: '4px' }}>AeroSocial © 2026</div>
+        <div className="footer-copy">AeroSocial © 2026</div>
       </footer>
     </div>
   )

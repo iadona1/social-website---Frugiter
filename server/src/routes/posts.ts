@@ -7,7 +7,6 @@ import fs from 'fs'
 
 const router = Router()
 
-// Multer setup for image uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = 'uploads/'
@@ -20,15 +19,10 @@ const storage = multer.diskStorage({
 })
 const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } })
 
-// Auth middleware
 const auth = (req: any, res: Response, next: any) => {
   const authHeader = req.headers.authorization
   const token = authHeader?.split(' ')[1]
-
-  if (!token) {
-    return res.status(401).json({ error: 'Not authorized' })
-  }
-
+  if (!token) return res.status(401).json({ error: 'Not authorized' })
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string }
     req.user = { userId: decoded.userId }
@@ -131,7 +125,6 @@ router.post('/:id/like', auth, async (req: any, res: Response) => {
       'SELECT id FROM likes WHERE post_id = $1 AND user_id = $2',
       [id, req.user.userId]
     )
-
     if (existing.rows.length > 0) {
       await pool.query('DELETE FROM likes WHERE post_id = $1 AND user_id = $2', [id, req.user.userId])
       await pool.query('UPDATE posts SET likes_count = likes_count - 1 WHERE id = $1', [id])
@@ -139,10 +132,31 @@ router.post('/:id/like', auth, async (req: any, res: Response) => {
       await pool.query('INSERT INTO likes (post_id, user_id) VALUES ($1, $2)', [id, req.user.userId])
       await pool.query('UPDATE posts SET likes_count = likes_count + 1 WHERE id = $1', [id])
     }
-
     res.json({ success: true })
   } catch (err) {
     console.error(err)
+    res.status(500).json({ error: 'Something went wrong' })
+  }
+})
+
+// Delete post
+router.delete('/:id', auth, async (req: any, res: Response) => {
+  const { id } = req.params
+  try {
+    const post = await pool.query(
+      'SELECT user_id FROM posts WHERE id = $1',
+      [id]
+    )
+    if (post.rows.length === 0) {
+      return res.status(404).json({ error: 'Post not found' })
+    }
+    if (post.rows[0].user_id !== req.user.userId) {
+      return res.status(403).json({ error: 'Not your post' })
+    }
+    await pool.query('DELETE FROM posts WHERE id = $1', [id])
+    res.status(200).json({ success: true })
+  } catch (err) {
+    console.error('Delete post error:', err)
     res.status(500).json({ error: 'Something went wrong' })
   }
 })
@@ -153,21 +167,28 @@ router.get('/:id/comments', auth, async (req: any, res: Response) => {
   try {
     const result = await pool.query(`
       SELECT
-        c.id, c.content, c.created_at,
-        u.display_name, pp.url as avatar_url
+        c.id, c.content, c.created_at, c.likes_count,
+        u.id as user_id, u.display_name, pp.url as avatar_url,
+        EXISTS(
+          SELECT 1 FROM comment_likes cl
+          WHERE cl.comment_id = c.id AND cl.user_id = $2
+        ) as liked
       FROM comments c
       JOIN users u ON c.user_id = u.id
       LEFT JOIN profile_pictures pp ON pp.user_id = u.id AND pp.is_current = true
       WHERE c.post_id = $1
       ORDER BY c.created_at ASC
-    `, [id])
+    `, [id, req.user.userId])
 
     const comments = result.rows.map(row => ({
       id: row.id,
+      userId: row.user_id,
       displayName: row.display_name,
       avatarUrl: row.avatar_url || '/assets/Frugiter-Icon-blue.jpg',
       content: row.content,
-      createdAt: row.created_at
+      createdAt: row.created_at,
+      likesCount: row.likes_count,
+      liked: row.liked
     }))
 
     res.json({ comments })
@@ -211,39 +232,17 @@ router.post('/:id/comments', auth, async (req: any, res: Response) => {
     res.status(201).json({
       comment: {
         id: comment.id,
+        userId: req.user.userId,
         displayName: user.display_name,
         avatarUrl: user.avatar_url || '/assets/Frugiter-Icon-blue.jpg',
         content: comment.content,
-        createdAt: comment.created_at
+        createdAt: comment.created_at,
+        likesCount: 0,
+        liked: false
       }
     })
   } catch (err) {
     console.error(err)
-    res.status(500).json({ error: 'Something went wrong' })
-  }
-
-  // Delete post
-router.delete('/:id', auth, async (req: any, res: Response) => {
-  const { id } = req.params
-  try {
-    const post = await pool.query(
-      'SELECT user_id FROM posts WHERE id = $1',
-      [id]
-    )
-
-    if (post.rows.length === 0) {
-      return res.status(404).json({ error: 'Post not found' })
-    }
-
-    if (post.rows[0].user_id !== req.user.userId) {
-      return res.status(403).json({ error: 'Not your post' })
-    }
-
-    await pool.query('DELETE FROM posts WHERE id = $1', [id])
-    res.status(200).json({ success: true })
-
-  } catch (err) {
-    console.error('Delete post error:', err)
     res.status(500).json({ error: 'Something went wrong' })
   }
 })
@@ -285,44 +284,6 @@ router.post('/:postId/comments/:commentId/like', auth, async (req: any, res: Res
     console.error(err)
     res.status(500).json({ error: 'Something went wrong' })
   }
-})
-
-router.get('/:id/comments', auth, async (req: any, res: Response) => {
-  const { id } = req.params
-  try {
-    const result = await pool.query(`
-      SELECT
-        c.id, c.content, c.created_at, c.likes_count,
-        u.id as user_id, u.display_name, pp.url as avatar_url,
-        EXISTS(
-          SELECT 1 FROM comment_likes cl
-          WHERE cl.comment_id = c.id AND cl.user_id = $2
-        ) as liked
-      FROM comments c
-      JOIN users u ON c.user_id = u.id
-      LEFT JOIN profile_pictures pp ON pp.user_id = u.id AND pp.is_current = true
-      WHERE c.post_id = $1
-      ORDER BY c.created_at ASC
-    `, [id, req.user.userId])
-
-    const comments = result.rows.map(row => ({
-      id: row.id,
-      userId: row.user_id,
-      displayName: row.display_name,
-      avatarUrl: row.avatar_url || '/assets/Frugiter-Icon-blue.jpg',
-      content: row.content,
-      createdAt: row.created_at,
-      likesCount: row.likes_count,
-      liked: row.liked
-    }))
-
-    res.json({ comments })
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Something went wrong' })
-  }
-})
-
 })
 
 export default router
