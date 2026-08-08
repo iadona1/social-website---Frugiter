@@ -180,16 +180,19 @@ export default function PostCard({
       </div>
 
       {post.content && <div className="post-content">{post.content}</div>}
-
-      <img
-        src={
-          post.imageUrl?.startsWith("http")
-            ? post.imageUrl
-            : `http://localhost:3001${post.imageUrl}`
-        }
-        alt="post"
-        className="post-image"
-      />
+      {post.imageUrl && (
+        <div className="post-image-wrapper">
+          <img
+            src={
+              post.imageUrl.startsWith("http")
+                ? post.imageUrl
+                : `http://localhost:3001${post.imageUrl}`
+            }
+            alt="post"
+            className="post-image"
+          />
+        </div>
+      )}
 
       <div className="post-actions">
         <button

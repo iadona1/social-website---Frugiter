@@ -4,19 +4,30 @@ import jwt from 'jsonwebtoken'
 import multer from 'multer'
 import path from 'path'
 import fs from 'fs'
+import { fileURLToPath } from 'url'
+
 
 const router = Router()
 
+router.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`)
+  next()
+})
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const dir = 'uploads/'
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir)
+    const dir = path.join(__dirname, '../../../uploads')
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
     cb(null, dir)
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname))
   }
 })
+
 const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } })
 
 const auth = (req: any, res: Response, next: any) => {
