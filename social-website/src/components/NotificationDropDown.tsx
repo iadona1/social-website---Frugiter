@@ -1,54 +1,41 @@
-import '../styles/notificationDropdown.css'
+import '../styles/NotificationDropDown.css'
 import { useState, useRef, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import type { Notification } from '../types'
 
-interface Notification {
-  id: string
-  type: 'like' | 'comment' | 'friend_request' | 'accepted'
-  message: string
-  time: string
-  read: boolean
-}
-
-// Placeholder notifications for now
-const PLACEHOLDER: Notification[] = [
-  {
-    id: '1',
-    type: 'like',
-    message: 'Someone liked your post',
-    time: 'Just now',
-    read: false
-  },
-  {
-    id: '2',
-    type: 'comment',
-    message: 'Someone commented on your post',
-    time: '5m ago',
-    read: false
-  },
-  {
-    id: '3',
-    type: 'friend_request',
-    message: 'You have a new friend request',
-    time: '1h ago',
-    read: true
-  },
-]
-
-const typeIcon = {
+const typeIcon: Record<string, string> = {
   like: '💙',
   comment: '💬',
   friend_request: '👤',
-  accepted: '✅'
+  accepted: '✅',
+  reply: '↩️'
 }
 
 export default function NotificationDropdown() {
+  const navigate = useNavigate()
   const [open, setOpen] = useState(false)
-  const [notifications, setNotifications] = useState<Notification[]>(PLACEHOLDER)
+  const [notifications, setNotifications] = useState<Notification[]>([])
   const ref = useRef<HTMLDivElement>(null)
 
-  const unreadCount = notifications.filter(n => !n.read).length
+  const unreadCount = notifications.filter(n => !n.isRead).length
 
-  // Close when clicking outside
+  useEffect(() => {
+    fetchNotifications()
+  }, [])
+
+  const fetchNotifications = async () => {
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch('http://localhost:3001/api/notifications', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      const data = await res.json()
+      if (res.ok) setNotifications(data.notifications)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -59,21 +46,47 @@ export default function NotificationDropdown() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const handleMarkAllRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })))
+  const handleOpen = () => {
+    setOpen(prev => !prev)
+    if (!open) fetchNotifications()
   }
 
-  const handleMarkRead = (id: string) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n))
+  const handleMarkAllRead = async () => {
+    const token = localStorage.getItem('token')
+    await fetch('http://localhost:3001/api/notifications/read-all', {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })))
+  }
+
+  const handleClick = async (n: Notification) => {
+    const token = localStorage.getItem('token')
+    await fetch(`http://localhost:3001/api/notifications/${n.id}/read`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    setNotifications(prev => prev.map(notif =>
+      notif.id === n.id ? { ...notif, isRead: true } : notif
+    ))
+    setOpen(false)
+    if (n.postId) navigate(`/post/${n.postId}`)
+  }
+
+  const timeAgo = (dateStr: string) => {
+    const diff = Date.now() - new Date(dateStr).getTime()
+    const mins = Math.floor(diff / 60000)
+    const hrs = Math.floor(mins / 60)
+    const days = Math.floor(hrs / 24)
+    if (days > 0) return `${days}d ago`
+    if (hrs > 0) return `${hrs}h ago`
+    if (mins > 0) return `${mins}m ago`
+    return 'Just now'
   }
 
   return (
     <div className="notif-wrapper" ref={ref}>
-      <button
-        className="navbar-notif-btn"
-        onClick={() => setOpen(prev => !prev)}
-        title="Notifications"
-      >
+      <button className="navbar-notif-btn" onClick={handleOpen} title="Notifications">
         🔔
         {unreadCount > 0 && (
           <span className="notif-badge">{unreadCount}</span>
@@ -103,15 +116,18 @@ export default function NotificationDropdown() {
               notifications.map(n => (
                 <div
                   key={n.id}
-                  className={`notif-item ${!n.read ? 'unread' : ''}`}
-                  onClick={() => handleMarkRead(n.id)}
+                  className={`notif-item ${!n.isRead ? 'unread' : ''}`}
+                  onClick={() => handleClick(n)}
                 >
-                  <div className="notif-icon">{typeIcon[n.type]}</div>
+                  <div className="notif-avatar-wrapper">
+                    <img src={n.fromAvatar} alt="" className="notif-avatar" />
+                    <span className="notif-type-icon">{typeIcon[n.type] || '🔔'}</span>
+                  </div>
                   <div className="notif-content">
                     <div className="notif-message">{n.message}</div>
-                    <div className="notif-time">{n.time}</div>
+                    <div className="notif-time">{timeAgo(n.createdAt)}</div>
                   </div>
-                  {!n.read && <div className="notif-dot" />}
+                  {!n.isRead && <div className="notif-dot" />}
                 </div>
               ))
             )}

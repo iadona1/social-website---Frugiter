@@ -1,40 +1,39 @@
-import '../styles/friendList.css'
-import { useState, useEffect } from 'react'
-import type { User } from '../types/index'
+import "../styles/friendList.css";
+import { useState, useEffect } from "react";
+import type { User } from "../types/index";
 
 interface Friend {
-  id: string
-  displayName: string
-  avatarUrl: string
-  username: string
+  id: string;
+  displayName: string;
+  avatarUrl: string;
+  username: string;
 }
 
 interface FriendsListProps {
-  currentUser?: User
+  currentUser?: User;
 }
 
-export default function FriendsList({ }: FriendsListProps) {
-  const [friends, setFriends] = useState<Friend[]>([])
-  const [loading, setLoading] = useState(true)
+export default function FriendsList({}: FriendsListProps) {
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchFriends = async () => {
       try {
-        const token = localStorage.getItem('token')
-        const res = await fetch('http://localhost:3001/api/friends', {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-        const data = await res.json()
-        if (res.ok) setFriends(data.friends)
+        const token = localStorage.getItem("token");
+        const res = await fetch("http://localhost:3001/api/friends", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (res.ok) setFriends(data.friends);
       } catch (err) {
-        console.error(err)
+        console.error(err);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchFriends()
-  }, [])
-
+    };
+    fetchFriends();
+  }, []);
   return (
     <aside className="friends-panel">
       <div className="friends-panel-shine" />
@@ -46,17 +45,17 @@ export default function FriendsList({ }: FriendsListProps) {
         <div className="friends-empty">
           <div className="friends-empty-icon">🌊</div>
           <div>No friends yet!</div>
-          <div style={{ fontSize: '11px', marginTop: '4px', opacity: 0.7 }}>
+          <div style={{ fontSize: "11px", marginTop: "4px", opacity: 0.7 }}>
             Search for people to add
           </div>
         </div>
       ) : (
         <div className="friends-list">
-          {friends.map(friend => (
+          {friends.map((friend) => (
             <div key={friend.id} className="friend-item">
               <div className="friend-avatar-wrapper">
                 <img
-                  src={friend.avatarUrl || '/assets/Frugiter-Icon-blue.jpg'}
+                  src={friend.avatarUrl || "/assets/Frugiter-Icon-blue.jpg"}
                   alt={friend.displayName}
                   className="friend-avatar"
                 />
@@ -78,5 +77,5 @@ export default function FriendsList({ }: FriendsListProps) {
         />
       </div>
     </aside>
-  )
+  );
 }

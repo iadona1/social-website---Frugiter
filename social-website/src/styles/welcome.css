@@ -435,7 +435,7 @@
 }
 
 .aero-input::placeholder {
-  color: rgba(10, 42, 106, 0.6);
+   color: rgba(10, 42, 106, 0.5);
 }
 
 .aero-input:focus {

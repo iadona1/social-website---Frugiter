@@ -8,7 +8,7 @@ import crypto from 'crypto'
 const router = Router()
 
 router.post('/register', async (req: Request, res: Response) => {
-  const { firstName, lastName, username, email, password, confirmEmail, dateOfBirth } = req.body
+  const { firstName, lastName, username, email, password, confirmPassword, dateOfBirth } = req.body
 
   try {
     if (!firstName || !lastName || !email || !password) {
@@ -23,9 +23,9 @@ router.post('/register', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Username must be at least 3 characters' })
     }
 
-    if (email !== confirmEmail) {
-      return res.status(400).json({ error: 'Emails do not match' })
-    }
+if (password !== confirmPassword) {
+  return res.status(400).json({ error: 'Passwords do not match' })
+}
 
     if (password.length < 6) {
       return res.status(400).json({ error: 'Password must be at least 6 characters' })
@@ -348,6 +348,141 @@ router.post('/reset-password', async (req: Request, res: Response) => {
   } catch (err) {
     console.error('Reset password error:', err)
     return res.status(500).json({ error: 'Something went wrong. Please try again.' })
+  }
+})
+
+// Update account settings
+router.put('/settings', async (req: Request, res: Response) => {
+  const authHeader = req.headers.authorization
+  const token = authHeader?.split(' ')[1]
+  if (!token) return res.status(401).json({ error: 'Not authorized' })
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string }
+    const { displayName, username, bio } = req.body
+
+    if (username) {
+      const existing = await pool.query(
+        'SELECT id FROM users WHERE username = $1 AND id != $2',
+        [username, decoded.userId]
+      )
+      if (existing.rows.length > 0) {
+        return res.status(400).json({ error: 'That username is already taken' })
+      }
+    }
+
+    const result = await pool.query(
+      `UPDATE users SET
+        display_name = COALESCE($1, display_name),
+        username = COALESCE($2, username),
+        bio = COALESCE($3, bio),
+        updated_at = NOW()
+       WHERE id = $4
+       RETURNING id, display_name, email, username, bio`,
+      [displayName || null, username || null, bio || null, decoded.userId]
+    )
+
+    const user = result.rows[0]
+    const avatarResult = await pool.query(
+      'SELECT url FROM profile_pictures WHERE user_id = $1 AND is_current = true',
+      [decoded.userId]
+    )
+    const avatarUrl = avatarResult.rows[0]?.url || '/assets/Frugiter-Icon-blue.jpg'
+
+    return res.json({
+      message: 'Settings updated successfully',
+      user: {
+        id: user.id,
+        displayName: user.display_name,
+        email: user.email,
+        avatarUrl
+      }
+    })
+  } catch (err) {
+    console.error('Settings update error:', err)
+    return res.status(500).json({ error: 'Something went wrong' })
+  }
+})
+
+// Update password
+router.put('/password', async (req: Request, res: Response) => {
+  const authHeader = req.headers.authorization
+  const token = authHeader?.split(' ')[1]
+  if (!token) return res.status(401).json({ error: 'Not authorized' })
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string }
+    const { currentPassword, newPassword, confirmPassword } = req.body
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return res.status(400).json({ error: 'All password fields are required' })
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: 'New password must be at least 6 characters' })
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ error: 'New passwords do not match' })
+    }
+
+    const result = await pool.query(
+      'SELECT password_hash FROM users WHERE id = $1',
+      [decoded.userId]
+    )
+
+    const passwordMatch = await bcrypt.compare(currentPassword, result.rows[0].password_hash)
+    if (!passwordMatch) {
+      return res.status(400).json({ error: 'Current password is incorrect' })
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 12)
+    await pool.query(
+      'UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2',
+      [passwordHash, decoded.userId]
+    )
+
+    return res.json({ message: 'Password updated successfully' })
+  } catch (err) {
+    console.error('Password update error:', err)
+    return res.status(500).json({ error: 'Something went wrong' })
+  }
+})
+
+// Delete account
+router.delete('/account', async (req: Request, res: Response) => {
+  const authHeader = req.headers.authorization
+  const token = authHeader?.split(' ')[1]
+  if (!token) return res.status(401).json({ error: 'Not authorized' })
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string }
+    const { password } = req.body
+
+    if (!password) {
+      return res.status(400).json({ error: 'Password is required to delete account' })
+    }
+
+    const result = await pool.query(
+      'SELECT password_hash FROM users WHERE id = $1',
+      [decoded.userId]
+    )
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' })
+    }
+
+    const passwordMatch = await bcrypt.compare(password, result.rows[0].password_hash)
+    if (!passwordMatch) {
+      return res.status(400).json({ error: 'Incorrect password' })
+    }
+
+    await pool.query('DELETE FROM users WHERE id = $1', [decoded.userId])
+    return res.json({ message: 'Account deleted successfully' })
+
+  } catch (err) {
+    console.error('Delete account error:', err)
+    return res.status(500).json({ error: 'Something went wrong' })
   }
 })
 

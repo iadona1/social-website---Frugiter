@@ -312,3 +312,52 @@
   background-position: center;
   z-index: 0;
 }
+
+.settings-error {
+  font-size: 12px;
+  color: #a02020;
+  background: rgba(220, 50, 50, 0.12);
+  border: 1px solid rgba(220, 50, 50, 0.3);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.settings-success {
+  font-size: 12px;
+  color: #1a6a1a;
+  background: rgba(50, 180, 50, 0.12);
+  border: 1px solid rgba(50, 180, 50, 0.3);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.settings-danger-text {
+  font-size: 12px;
+  color: #4a7ab5;
+  line-height: 1.5;
+}
+
+.settings-delete-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.settings-delete-btns {
+  display: flex;
+  gap: 10px;
+}
+
+.settings-save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.settings-danger-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}

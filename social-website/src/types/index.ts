@@ -3,7 +3,7 @@ export interface SignupData {
   lastName: string
   username: string
   email: string
-  confirmEmail: string
+  confirmPassword: string
   password: string
   dateOfBirth: string
 }
@@ -66,4 +66,35 @@ export interface PostCardProps {
   onLike: (postId: string) => Promise<void>;
   onDelete: (postId: string) => void;
   currentUserId: string;
+}
+
+export interface SearchUser {
+  id: string
+  displayName: string
+  username: string
+  avatarUrl: string
+  friendshipStatus: string
+  friendshipDirection: string
+}
+
+export interface Notification {
+  id: string
+  type: string
+  message: string
+  fromAvatar: string
+  isRead: boolean
+  createdAt: string
+  postId?: string
+}
+
+export interface Reply {
+  id: string
+  userId: string
+  displayName: string
+  username: string
+  avatarUrl: string
+  content: string
+  createdAt: string
+  likesCount: number
+  liked: boolean
 }

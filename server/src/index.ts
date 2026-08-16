@@ -6,6 +6,8 @@ import { fileURLToPath } from 'url'
 import authRoutes from './routes/auth.js'
 import postRoutes from './routes/posts.js'
 import friendRoutes from './routes/friends.js'
+import userRoutes from './routes/users.js'
+import notificationRoutes from './routes/notifications.js'
 
 dotenv.config()
 
@@ -30,6 +32,8 @@ app.use('/uploads', express.static(path.join(__dirname, '../../uploads')))
 app.use('/api/auth', authRoutes)
 app.use('/api/posts', postRoutes)
 app.use('/api/friends', friendRoutes)
+app.use('/api/users', userRoutes)
+app.use('/api/notifications', notificationRoutes)
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'AeroSocial server is running!' })
