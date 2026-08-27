@@ -6,9 +6,10 @@ import type { Post } from '../types/index'
 interface PostComposerProps {
   user: User
   onPostCreated: (post: Post) => void
+  onClose: () => void
 }
 
-export default function PostComposer({ user, onPostCreated }: PostComposerProps) {
+export default function PostComposer({ user, onPostCreated, onClose }: PostComposerProps) {
   const [content, setContent] = useState('')
   const [image, setImage] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -58,10 +59,7 @@ export default function PostComposer({ user, onPostCreated }: PostComposerProps)
       }
 
       onPostCreated(data.post)
-      setContent('')
-      setImage(null)
-      setImagePreview(null)
-      if (fileRef.current) fileRef.current.value = ''
+      onClose()
 
     } catch {
       setError('Could not connect to server.')
@@ -71,55 +69,66 @@ export default function PostComposer({ user, onPostCreated }: PostComposerProps)
   }
 
   return (
-    <div className="composer-card">
-      <div className="composer-top">
-        <img
-          src={user.avatarUrl || '/assets/Frugiter-Icon-blue.jpg'}
-          alt="avatar"
-          className="composer-avatar"
-        />
+    <div className="composer-overlay" onClick={onClose}>
+      <div className="composer-modal" onClick={e => e.stopPropagation()}>
+        <div className="composer-modal-shine" />
+
+        <div className="composer-header">
+          <img
+            src={user.avatarUrl || '/assets/Frugiter-Icon-blue.jpg'}
+            alt="avatar"
+            className="composer-avatar"
+          />
+          <div className="composer-header-info">
+            <div className="composer-name">{user.displayName}</div>
+            <div className="composer-label">New Post</div>
+          </div>
+          <button className="composer-close-btn" onClick={onClose}>✕</button>
+        </div>
+
         <textarea
-          className="composer-input"
-          placeholder={`What's on your mind, ${user.displayName?.split(' ')[0] || 'friend'}?`}
+          className="composer-textarea"
+          placeholder={`What's on your mind, ${user.displayName?.split(' ')[0]}?`}
           value={content}
           onChange={e => setContent(e.target.value)}
-          rows={3}
+          rows={5}
+          autoFocus
         />
-      </div>
 
-      {imagePreview && (
-        <div className="composer-preview">
-          <img src={imagePreview} alt="preview" />
-          <button className="composer-remove-img" onClick={handleRemoveImage}>✕</button>
+        {imagePreview && (
+          <div className="composer-preview">
+            <img src={imagePreview} alt="preview" />
+            <button className="composer-remove-img" onClick={handleRemoveImage}>✕</button>
+          </div>
+        )}
+
+        {error && <div className="composer-error">{error}</div>}
+
+        <div className="composer-footer">
+          <button
+            className="composer-img-btn"
+            onClick={() => fileRef.current?.click()}
+          >
+            🖼️ Add Photo
+          </button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            style={{ display: 'none' }}
+          />
+          <div className="composer-footer-right">
+            <button className="composer-cancel-btn" onClick={onClose}>Cancel</button>
+            <button
+              className="composer-post-btn"
+              onClick={handleSubmit}
+              disabled={loading}
+            >
+              {loading ? 'Posting...' : 'Post'}
+            </button>
+          </div>
         </div>
-      )}
-
-      {error && (
-        <div className="composer-error">{error}</div>
-      )}
-
-      <div className="composer-bottom">
-        <button
-          className="composer-img-btn"
-          onClick={() => fileRef.current?.click()}
-          title="Add image"
-        >
-          🖼️ Photo
-        </button>
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-          style={{ display: 'none' }}
-        />
-        <button
-          className="composer-post-btn"
-          onClick={handleSubmit}
-          disabled={loading}
-        >
-          {loading ? 'Posting...' : 'Post'}
-        </button>
       </div>
     </div>
   )

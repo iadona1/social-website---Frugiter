@@ -39,6 +39,7 @@ export interface AvatarOption {
 export interface Comment {
   id: string
   userId: string
+  username?: string
   displayName: string
   avatarUrl: string
   content: string
@@ -46,10 +47,10 @@ export interface Comment {
   likesCount: number
   liked: boolean
 }
-
 export interface Post {
   id: string
   userId: string
+  username?: string
   displayName: string
   avatarUrl: string
   content: string
@@ -90,8 +91,8 @@ export interface Notification {
 export interface Reply {
   id: string
   userId: string
+  username?: string
   displayName: string
-  username: string
   avatarUrl: string
   content: string
   createdAt: string

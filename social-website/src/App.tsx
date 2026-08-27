@@ -7,56 +7,22 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import ResetPassword from "./pages/resetPasswordPage";
 import ForgotPassword from "./pages/forgotPasswordPage";
 import ProfilePage from "./pages/profilePage";
+import PostPage from "./pages/postPage";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Welcome />} />
-        <Route
-          path="/select-avatar"
-          element={
-            <ProtectedRoute>
-              <SelectAvatar />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/home"
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <ProtectedRoute>
-              <Settings />
-            </ProtectedRoute>
-          }
-        />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        
-        {/* Moved inside <Routes> */}
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <ProfilePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile/:username"
-          element={
-            <ProtectedRoute>
-              <ProfilePage />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/select-avatar" element={<ProtectedRoute><SelectAvatar /></ProtectedRoute>} />
+        <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+        <Route path="/profile/:username" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+        <Route path="/post/:postId" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+        <Route path="/post/:postId" element={<ProtectedRoute><PostPage /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   );

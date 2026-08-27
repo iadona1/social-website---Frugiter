@@ -6,15 +6,24 @@ import WindowsTitleBar from '../components/WindowsTitleBar'
 import PostCard from '../components/PostCard'
 import NotificationDropdown from '../components/NotificationDropDown'
 
+type EditMode = null | 'choose' | 'displayName' | 'avatar'
+
 export default function ProfilePage() {
   const navigate = useNavigate()
   const { username } = useParams()
-  const [currentUser] = useState<User>(() => JSON.parse(localStorage.getItem('user') || '{}'))
+  const [currentUser, setCurrentUser] = useState<User>(() => JSON.parse(localStorage.getItem('user') || '{}'))
 
   const [profileUser, setProfileUser] = useState<any>(null)
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [friendLoading, setFriendLoading] = useState(false)
+
+  // Edit profile popup
+  const [editMode, setEditMode] = useState<EditMode>(null)
+  const [newDisplayName, setNewDisplayName] = useState('')
+  const [editLoading, setEditLoading] = useState(false)
+  const [editMsg, setEditMsg] = useState('')
+  const [editErr, setEditErr] = useState('')
 
   const isOwnProfile = !username || username === currentUser.id
 
@@ -29,8 +38,6 @@ export default function ProfilePage() {
   const fetchOwnProfile = async () => {
     try {
       const token = localStorage.getItem('token')
-
-      // Get own posts
       const res = await fetch('http://localhost:3001/api/posts', {
         headers: { Authorization: `Bearer ${token}` }
       })
@@ -111,6 +118,36 @@ export default function ProfilePage() {
     return '+ Add Friend'
   }
 
+  const handleSaveDisplayName = async () => {
+    if (!newDisplayName.trim()) return
+    setEditLoading(true)
+    setEditErr('')
+    setEditMsg('')
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch('http://localhost:3001/api/auth/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ displayName: newDisplayName })
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setEditErr(data.error)
+        return
+      }
+      const updatedUser = { ...currentUser, displayName: newDisplayName }
+      localStorage.setItem('user', JSON.stringify(updatedUser))
+      setCurrentUser(updatedUser)
+      setProfileUser((prev: any) => ({ ...prev, displayName: newDisplayName }))
+      setEditMsg('Display name updated!')
+      setTimeout(() => setEditMode(null), 1200)
+    } catch {
+      setEditErr('Could not connect to server.')
+    } finally {
+      setEditLoading(false)
+    }
+  }
+
   const handleLike = async (postId: string) => {
     const token = localStorage.getItem('token')
     const res = await fetch(`http://localhost:3001/api/posts/${postId}/like`, {
@@ -134,6 +171,71 @@ export default function ProfilePage() {
     <div className="profile-page">
       <WindowsTitleBar title="AeroSocial — Profile" />
       <div className="profile-bg" />
+
+      {/* Edit Profile Popup */}
+      {editMode && (
+        <div className="edit-overlay" onClick={() => setEditMode(null)}>
+          <div className="edit-modal" onClick={e => e.stopPropagation()}>
+            <div className="edit-modal-shine" />
+
+            {editMode === 'choose' && (
+              <>
+                <div className="edit-modal-title">Edit Profile</div>
+                <div className="edit-modal-sub">What would you like to change?</div>
+                <div className="edit-choices">
+                  <button
+                    className="edit-choice-btn"
+                    onClick={() => {
+                      setNewDisplayName(currentUser.displayName || '')
+                      setEditMode('displayName')
+                    }}
+                  >
+                    ✏️ Display Name
+                  </button>
+                  <button
+                    className="edit-choice-btn"
+                    onClick={() => {
+                      setEditMode(null)
+                      navigate('/select-avatar')
+                    }}
+                  >
+                    🎨 Profile Picture
+                  </button>
+                </div>
+                <button className="edit-cancel-btn" onClick={() => setEditMode(null)}>Cancel</button>
+              </>
+            )}
+
+            {editMode === 'displayName' && (
+              <>
+                <div className="edit-modal-title">Change Display Name</div>
+                <div className="edit-modal-sub">Enter your new display name below.</div>
+                <input
+                  className="edit-input"
+                  type="text"
+                  value={newDisplayName}
+                  onChange={e => setNewDisplayName(e.target.value)}
+                  placeholder="New display name"
+                  onKeyDown={e => e.key === 'Enter' && handleSaveDisplayName()}
+                  autoFocus
+                />
+                {editErr && <div className="edit-error">{editErr}</div>}
+                {editMsg && <div className="edit-success">{editMsg}</div>}
+                <div className="edit-modal-btns">
+                  <button className="edit-cancel-btn" onClick={() => setEditMode('choose')}>← Back</button>
+                  <button
+                    className="edit-save-btn"
+                    onClick={handleSaveDisplayName}
+                    disabled={editLoading}
+                  >
+                    {editLoading ? 'Saving...' : 'Save'}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       <nav className="home-navbar">
         <div className="navbar-logo" onClick={() => navigate('/home')} style={{ cursor: 'pointer' }}>
@@ -208,14 +310,17 @@ export default function ProfilePage() {
           {isOwnProfile && (
             <button
               className="profile-edit-btn"
-              onClick={() => navigate('/settings')}
+              onClick={() => {
+                setEditMsg('')
+                setEditErr('')
+                setEditMode('choose')
+              }}
             >
-              ⚙️ Edit Profile
+              ✏️ Edit Profile
             </button>
           )}
         </div>
 
-        {/* Posts */}
         <div className="profile-posts-section">
           <div className="profile-posts-header">
             {loading ? 'Loading posts...' : posts.length === 0 ? 'No posts yet' : `${posts.length} Post${posts.length !== 1 ? 's' : ''}`}

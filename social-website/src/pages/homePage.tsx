@@ -1,14 +1,15 @@
-import "../styles/Home.css";
+import "../styles/home.css";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import type { User } from "../types/index";
-import type { Post } from "../types/index";
+import type { User, Post } from "../types/index";
 import WindowsTitleBar from "../components/WindowsTitleBar";
 import PostComposer from "../components/PostComposer";
 import PostCard from "../components/PostCard";
 import FriendsList from "../components/FriendsList";
 import NotificationDropdown from "../components/NotificationDropDown";
 import SearchBar from "../components/SearchBar";
+
+type SortMode = 'fresh' | 'hot' | 'top'
 
 export default function Home() {
   const navigate = useNavigate();
@@ -17,6 +18,8 @@ export default function Home() {
   );
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showComposer, setShowComposer] = useState(false);
+  const [sort, setSort] = useState<SortMode>('fresh');
 
   useEffect(() => {
     fetchPosts();
@@ -38,6 +41,13 @@ export default function Home() {
     }
   };
 
+  const getSortedPosts = () => {
+    const p = [...posts]
+    if (sort === 'hot') return p.sort((a, b) => (b.likesCount + b.commentsCount) - (a.likesCount + a.commentsCount))
+    if (sort === 'top') return p.sort((a, b) => b.likesCount - a.likesCount)
+    return p // fresh = default (by date from server)
+  }
+
   const handlePostCreated = (newPost: Post) => {
     setPosts((prev) => [newPost, ...prev]);
   };
@@ -56,11 +66,7 @@ export default function Home() {
       setPosts((prev) =>
         prev.map((p) =>
           p.id === postId
-            ? {
-                ...p,
-                liked: !p.liked,
-                likesCount: p.liked ? p.likesCount - 1 : p.likesCount + 1,
-              }
+            ? { ...p, liked: !p.liked, likesCount: p.liked ? p.likesCount - 1 : p.likesCount + 1 }
             : p,
         ),
       );
@@ -71,6 +77,14 @@ export default function Home() {
     <div className="home-page">
       <WindowsTitleBar title="AeroSocial — Home" />
       <div className="home-bg" />
+
+      {showComposer && (
+        <PostComposer
+          user={user}
+          onPostCreated={handlePostCreated}
+          onClose={() => setShowComposer(false)}
+        />
+      )}
 
       <nav className="home-navbar">
         <div
@@ -83,7 +97,6 @@ export default function Home() {
         </div>
 
         <SearchBar />
-
         <div className="navbar-spacer" />
 
         <div className="navbar-right">
@@ -106,24 +119,51 @@ export default function Home() {
 
       <div className="home-layout">
         <main className="feed-column">
-          <PostComposer user={user} onPostCreated={handlePostCreated} />
+
+          {/* Forum toolbar */}
+          <div className="forum-toolbar">
+            <div className="forum-sort-bar">
+              <button
+                className={`sort-btn ${sort === 'fresh' ? 'active' : ''}`}
+                onClick={() => setSort('fresh')}
+              >
+                ✨ Fresh
+              </button>
+              <button
+                className={`sort-btn ${sort === 'hot' ? 'active' : ''}`}
+                onClick={() => setSort('hot')}
+              >
+                🔥 Hot
+              </button>
+              <button
+                className={`sort-btn ${sort === 'top' ? 'active' : ''}`}
+                onClick={() => setSort('top')}
+              >
+                ⭐ Top
+              </button>
+            </div>
+            <button
+              className="new-post-btn"
+              onClick={() => setShowComposer(true)}
+            >
+              ✏️ New Post
+            </button>
+          </div>
 
           {loading ? (
             <div className="feed-loading">
               <div className="feed-loading-spinner" />
-              <span>Loading your feed...</span>
+              <span>Loading feed...</span>
             </div>
           ) : posts.length === 0 ? (
             <div className="feed-empty">
               <div className="feed-empty-icon">🌊</div>
               <div className="feed-empty-title">Nothing here yet!</div>
-              <div className="feed-empty-sub">
-                Be the first to post something.
-              </div>
+              <div className="feed-empty-sub">Be the first to post something.</div>
             </div>
           ) : (
             <div className="feed-posts">
-              {posts.map((post, index) => (
+              {getSortedPosts().map((post, index) => (
                 <PostCard
                   key={post.id}
                   post={post}

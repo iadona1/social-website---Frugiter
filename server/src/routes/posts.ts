@@ -519,4 +519,49 @@ router.delete('/:postId/comments/:commentId/replies/:replyId', auth, async (req:
   }
 })
 
+// Get single post
+router.get('/:id', auth, async (req: any, res: Response) => {
+  const { id } = req.params
+  try {
+    const result = await pool.query(`
+      SELECT
+        p.id, p.content, p.image_url, p.likes_count, p.comments_count, p.created_at,
+        u.id as user_id, u.display_name, u.username,
+        pp.url as avatar_url,
+        EXISTS(
+          SELECT 1 FROM likes l
+          WHERE l.post_id = p.id AND l.user_id = $2
+        ) as liked
+      FROM posts p
+      JOIN users u ON p.user_id = u.id
+      LEFT JOIN profile_pictures pp ON pp.user_id = u.id AND pp.is_current = true
+      WHERE p.id = $1
+    `, [id, req.user.userId])
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Post not found' })
+    }
+
+    const row = result.rows[0]
+    res.json({
+      post: {
+        id: row.id,
+        userId: row.user_id,
+        displayName: row.display_name,
+        username: row.username,
+        avatarUrl: row.avatar_url || '/assets/Frugiter-Icon-blue.jpg',
+        content: row.content,
+        imageUrl: row.image_url,
+        likesCount: row.likes_count,
+        commentsCount: row.comments_count,
+        createdAt: row.created_at,
+        liked: row.liked
+      }
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Something went wrong' })
+  }
+})
+
 export default router;
